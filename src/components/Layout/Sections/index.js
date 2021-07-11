@@ -58,6 +58,7 @@ const Components = {
   IntroText,
   TextAndImage,
   Standard: StandardSectionComponent,
+  Pledge,
 };
 
 export default function Sections({ sections, pageContext }) {

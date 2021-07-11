@@ -19,7 +19,7 @@ export const FinallyMessage = ({
 
   return (
     <div className={className}>
-      {state === 'success' && <HurrayCrowd />}
+      {/* {state === 'success' && <HurrayCrowd />} */}
       <div className={s.message} ref={messageRef}>
         <div className={cN(s.messageInner)}>
           {state === 'progress' && <div className={s.savingIndicator} />}

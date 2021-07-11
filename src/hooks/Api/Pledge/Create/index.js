@@ -12,13 +12,13 @@ export const useCreatePledge = () => {
   const [state, setState] = useState(null);
 
   //get user id  from global context
-  const { userId } = useContext(AuthContext);
+  const { userId, token } = useContext(AuthContext);
 
-  return [state, pledge => createPledge(userId, pledge, setState)];
+  return [state, pledge => createPledge(userId, pledge, token, setState)];
 };
 
 // Function which calls the aws api to create a new pledge
-const createPledge = async (userId, pledge, setState) => {
+const createPledge = async (userId, pledge, token, setState) => {
   try {
     setState('saving');
 
@@ -33,6 +33,7 @@ const createPledge = async (userId, pledge, setState) => {
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: token,
       },
       body: JSON.stringify(data),
     };

@@ -56,7 +56,12 @@ const SignaturePledge = ({ pledgeId }) => {
     }
   }, [isAuthenticated, hasSubmitted, userExists]);
 
-  if (signUpState === 'success' && !isAuthenticated) {
+  if (
+    signUpState === 'success' &&
+    !isAuthenticated &&
+    !updatePledgeState &&
+    !createPledgeState
+  ) {
     return <EnterLoginCode preventSignIn={true} />;
   }
 
@@ -164,19 +169,19 @@ const SignaturePledge = ({ pledgeId }) => {
               <FormSection>
                 {(!isAuthenticated ||
                   (isAuthenticated && !userData?.newsletterConsent?.value)) && (
-                    <Field
-                      name="newsletterConsent"
-                      label={
-                        <>
-                          Schreibt mir, wenn die Unterschriftslisten da sind und
-                          haltet mich über alle weiteren Kampagnenschritte auf dem
-                          Laufenden.
-                        </>
-                      }
-                      type="checkbox"
-                      component={Checkbox}
-                    ></Field>
-                  )}
+                  <Field
+                    name="newsletterConsent"
+                    label={
+                      <>
+                        Schreibt mir, wenn die Unterschriftslisten da sind und
+                        haltet mich über alle weiteren Kampagnenschritte auf dem
+                        Laufenden.
+                      </>
+                    }
+                    type="checkbox"
+                    component={Checkbox}
+                  ></Field>
+                )}
                 {!isAuthenticated && (
                   <Field
                     name="privacyConsent"
@@ -259,6 +264,11 @@ const pledgeIdMap = {
     state: 'Bremen',
   },
   'berlin-1': {
+    signatureCountLabel:
+      'Wie viele Unterschriften von anderen Menschen in Berlin kannst du noch mit einsammeln?',
+    state: 'Berlin',
+  },
+  'berlin-2': {
     signatureCountLabel:
       'Wie viele Unterschriften von anderen Menschen in Berlin kannst du noch mit einsammeln?',
     state: 'Berlin',
