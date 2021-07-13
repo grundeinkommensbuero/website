@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 // import AuthContext from '../../../context/Authentication';
 import { MunicipalityContext } from '../../../context/Municipality';
-import { useUserMunicipalityContentfulState } from '../../../hooks/Municipality/UserMunicipalityContentfulState';
+import { useUserMunicipalityState } from '../../../hooks/Municipality/UserMunicipalityState';
 
 import * as s from './style.module.less';
 import cN from 'classnames';
@@ -11,12 +11,12 @@ import { SignUpButton } from '../SignupButton';
 export const SignupButtonAndTile = ({ className }) => {
   // const { userId, customUserData: userData } = useContext(AuthContext);
   const { municipality } = useContext(MunicipalityContext);
-  const userContentfulState = useUserMunicipalityContentfulState();
+  const userMunicipalityState = useUserMunicipalityState();
 
   const welcomeExistingMessage = getWelcomeExistingMessage(municipality);
-  const buttonText = getButtonText(municipality, userContentfulState);
+  const buttonText = getButtonText(municipality, userMunicipalityState);
 
-  if (municipality && userContentfulState === 'loggedOut') {
+  if (municipality && userMunicipalityState === 'loggedOut') {
     return (
       <>
         <SignUpButton className={cN(className, s.signUpCTA)}>
@@ -26,7 +26,7 @@ export const SignupButtonAndTile = ({ className }) => {
     );
   } else if (
     municipality &&
-    userContentfulState === 'loggedInNoMunicipalitySignup'
+    userMunicipalityState === 'loggedInNoMunicipalitySignup'
   ) {
     return (
       <>
@@ -42,7 +42,7 @@ export const SignupButtonAndTile = ({ className }) => {
     );
   } else if (
     municipality &&
-    userContentfulState === 'loggedInOtherMunicipalitySignup'
+    userMunicipalityState === 'loggedInOtherMunicipalitySignup'
   ) {
     return (
       <>
@@ -60,7 +60,7 @@ export const SignupButtonAndTile = ({ className }) => {
   }
 };
 
-export const getButtonText = (municipality, userContentfulState) => {
+export const getButtonText = (municipality, userMunicipalityState) => {
   if (!municipality) {
     return 'Ich will dabei sein';
   }
@@ -78,7 +78,7 @@ export const getButtonText = (municipality, userContentfulState) => {
     return `Ja, es soll weiter gehen!`;
   }
 
-  if (userContentfulState === 'loggedInOtherMunicipalitySignup') {
+  if (userMunicipalityState === 'loggedInOtherMunicipalitySignup') {
     return 'Sei dabei';
   }
 

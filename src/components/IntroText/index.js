@@ -7,11 +7,19 @@ import xbge from './logo-xbge-white.svg';
 import { StaticImage } from 'gatsby-plugin-image';
 
 import { SignupButtonAndTile } from '../TickerToSignup/SignupButtonAndTile';
+import { useUserMunicipalityState } from '../../hooks/Municipality/UserMunicipalityState';
 
 export const IntroText = ({
   highlightText: { highlightText },
   note: { note },
 }) => {
+  const userMunicipalityState = useUserMunicipalityState();
+
+  // Don't render this component if user has signed up for this municipality
+  if (userMunicipalityState === 'loggedInThisMunicipalitySignup') {
+    return null;
+  }
+
   return (
     <div>
       <p className={s.introText}>{highlightText}</p>

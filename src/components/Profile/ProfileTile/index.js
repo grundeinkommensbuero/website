@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import AuthContext from '../../../context/Authentication';
 import { MunicipalityContext } from '../../../context/Municipality';
-import { useUserMunicipalityContentfulState } from '../../../hooks/Municipality/UserMunicipalityContentfulState';
+import { useUserMunicipalityState } from '../../../hooks/Municipality/UserMunicipalityState';
 import AvatarImage from '../../AvatarImage';
 import { LinkButtonLocal, Button } from '../../Forms/Button';
 import { SignUpButton } from '../../TickerToSignup/SignupButton';
@@ -25,29 +25,26 @@ export const ProfileTile = ({ children }) => {
     setMunicipality,
   };
 
-  const userContentfulState = useUserMunicipalityContentfulState();
+  const userMunicipalityState = useUserMunicipalityState();
 
-  // console.log(userData);
-  // console.log(userContentfulState, municipalityContentfulState);
-
-  if (userContentfulState === 'loggedInThisMunicipalitySignup') {
+  if (userMunicipalityState === 'loggedInThisMunicipalitySignup') {
     return <TileLoggedInThisMunicipality {...tileData} />;
   }
   if (
     municipalityContentfulState === 'noMunicipality' &&
-    userContentfulState === 'loggedInOtherMunicipalitySignup'
+    userMunicipalityState === 'loggedInOtherMunicipalitySignup'
   ) {
     return <TileNoMunicipalityLoggedInOtherMunicipality {...tileData} />;
   }
   if (
-    userContentfulState === 'loggedInNoMunicipalitySignup' &&
+    userMunicipalityState === 'loggedInNoMunicipalitySignup' &&
     municipalityContentfulState === 'noMunicipality'
   ) {
     return <WelcomeBack {...tileData} />;
   }
   if (
     municipalityContentfulState !== 'noMunicipality' &&
-    userContentfulState === 'loggedInOtherMunicipalitySignup'
+    userMunicipalityState === 'loggedInOtherMunicipalitySignup'
   ) {
     return <TileMunicipalityLoggedInOtherMunicipality {...tileData} />;
   }
@@ -55,7 +52,6 @@ export const ProfileTile = ({ children }) => {
 };
 
 const TileLoggedInThisMunicipality = ({ userId, userData, municipality }) => {
-
   const referredUserMessage = getReferredUserMessage({ userData });
 
   return (
@@ -80,10 +76,11 @@ const TileLoggedInThisMunicipality = ({ userId, userData, municipality }) => {
                 </li>
               </ul>
             </div>
-            {referredUserMessage ?
+            {referredUserMessage ? (
               <div className={s.referredUsersMessage}>
                 {referredUserMessage}
-              </div> : null}
+              </div>
+            ) : null}
           </div>
           <div className={s.flexElement}>
             <h3 className={s.headline}>Hallo {userData.username}!</h3>

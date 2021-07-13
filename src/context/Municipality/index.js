@@ -37,12 +37,6 @@ export const MunicipalityProvider = ({ children }) => {
     setMunicipalityContentfulState,
   ] = useState('noMunicipality');
 
-  // State to check whether this municipality is bremen,
-  // hamburg, berlin or other municipality
-  const [berlinHamburgBremenState, setBerlinHamburgBremenState] = useState(
-    'noMunicipality'
-  );
-
   const ags = useRef();
 
   // Get general municipality stats (of all munics)
@@ -98,24 +92,10 @@ export const MunicipalityProvider = ({ children }) => {
         // but in case the municipality stats endpoint is down we should
         // set it to qualifying for now?
         setMunicipalityContentfulState('qualifying');
-
-        if (municipality.ags === '11000000') {
-          // Berlin
-          setBerlinHamburgBremenState('berlin');
-        } else if (municipality.ags === '02000000') {
-          // Hamburg
-          setBerlinHamburgBremenState('hamburg');
-        } else if (municipality.ags === '04011000') {
-          // Bremen
-          setBerlinHamburgBremenState('bremen');
-        } else {
-          setBerlinHamburgBremenState('allExceptBerlinHamburgBremen');
-        }
       }
     } else {
       ags.current = undefined;
       setMunicipalityContentfulState('noMunicipality');
-      setBerlinHamburgBremenState('noMunicipality');
       setIsSpecific(false);
       // ! IMPORTANT:
       // TODO: is it possible to set isMunicipality here?
@@ -158,21 +138,24 @@ export const MunicipalityProvider = ({ children }) => {
 
   useEffect(() => {
     // Create Object with raw municipality data for faster reference
-    const municipalityObject = municipalities.reduce((muniObj, municipality) => {
-      muniObj[municipality.ags.toString()] = {
-        name: municipality.name,
-        goal: municipality.goal,
-        population: municipality.population
-      };
-      return muniObj;
-    }, {});
+    const municipalityObject = municipalities.reduce(
+      (muniObj, municipality) => {
+        muniObj[municipality.ags.toString()] = {
+          name: municipality.name,
+          goal: municipality.goal,
+          population: municipality.population,
+        };
+        return muniObj;
+      },
+      {}
+    );
     // When there are events, add them to municipality key
     if (allMunicipalityStats.events) {
       allMunicipalityStats.events.forEach(e => {
         municipalityObject[e.ags.toString()] = {
           event: e,
-          ...municipalityObject[e.ags.toString()]
-        }
+          ...municipalityObject[e.ags.toString()],
+        };
       });
     }
     setMunicipalitiesInObject(municipalityObject);
@@ -187,11 +170,14 @@ export const MunicipalityProvider = ({ children }) => {
           const fullMunicipality = {
             ags: municipality.ags,
             signups: municipality.signups,
-            percent: Math.round(municipality.signups / municipalitiesInObject[municipality.ags.toString()].goal * 100),
-            ...municipalitiesInObject[municipality.ags.toString()]
-          }
+            percent: Math.round(
+              (municipality.signups /
+                municipalitiesInObject[municipality.ags.toString()].goal) *
+                100
+            ),
+            ...municipalitiesInObject[municipality.ags.toString()],
+          };
           municipalitiesWithGoalAndSignups.push(fullMunicipality);
-
         }
       });
       municipalitiesWithGoalAndSignups.sort((a, b) => {
@@ -210,9 +196,12 @@ export const MunicipalityProvider = ({ children }) => {
     };
     municipalitiesGoalSignup.forEach(municipality => {
       if ('event' in municipality) {
-        const beforePercent = municipality.event.signups[0] / municipality.goal * 100;
-        const afterPercent = municipality.event.signups[1] / municipality.goal * 100;
-        municipality.grewByPercent = Math.round((afterPercent - beforePercent) * 100) / 100;
+        const beforePercent =
+          (municipality.event.signups[0] / municipality.goal) * 100;
+        const afterPercent =
+          (municipality.event.signups[1] / municipality.goal) * 100;
+        municipality.grewByPercent =
+          Math.round((afterPercent - beforePercent) * 100) / 100;
         segments.hot.push(municipality);
       }
       if (municipality.percent >= 100) {
@@ -240,7 +229,6 @@ export const MunicipalityProvider = ({ children }) => {
         isSpecific,
         setIsSpecific,
         municipalityContentfulState,
-        berlinHamburgBremenState,
         setPageContext,
         allMunicipalityStats,
         allMunicipalityStatsState,
@@ -249,7 +237,7 @@ export const MunicipalityProvider = ({ children }) => {
         statsSummary,
         municipalitiesGoalSignup,
         leaderboardSegments,
-        refreshContextStats: () => getAllMunicipalityStats()
+        refreshContextStats: () => getAllMunicipalityStats(),
       }}
     >
       {children}

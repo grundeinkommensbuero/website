@@ -2,9 +2,19 @@ import React, { useContext } from 'react';
 import * as s from './style.module.less';
 import { MunicipalityProgress } from '../MunicipalityProgress';
 import { MunicipalityContext } from '../../../context/Municipality';
+import { useUserMunicipalityState } from '../../../hooks/Municipality/UserMunicipalityState';
 
 export const MunicipalityInfoText = () => {
   const { municipality } = useContext(MunicipalityContext);
+  const userMunicipalityState = useUserMunicipalityState();
+
+  // Don't render this component if user has signed up for this municipality or is not signed in
+  if (
+    userMunicipalityState === 'loggedInThisMunicipalitySignup' ||
+    userMunicipalityState === 'loggedOut'
+  ) {
+    return null;
+  }
 
   if (municipality) {
     return (
@@ -15,7 +25,11 @@ export const MunicipalityInfoText = () => {
         </p>
         <MunicipalityDescription municipality={municipality} />
         <div>
-          <MunicipalityProgress showHeadline={false} showDescription={false} />
+          <MunicipalityProgress
+            showHeadline={false}
+            showDescription={false}
+            isPartOfInfoText={true}
+          />
         </div>
         <MunicipalityCTA municipality={municipality} />
       </div>

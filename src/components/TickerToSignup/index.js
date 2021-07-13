@@ -7,6 +7,7 @@ import { InlineLinkButton } from '../Forms/Button';
 import * as s from './style.module.less';
 import loadable from '@loadable/component';
 import { List as Loader } from 'react-content-loader';
+import { useUserMunicipalityState } from '../../hooks/Municipality/UserMunicipalityState';
 
 const Ticker = loadable(() => import('./Ticker'));
 const TickerMunicipality = loadable(() =>
@@ -17,6 +18,13 @@ export const TickerToSignup = ({
   tickerDescription: tickerDescriptionObject,
 }) => {
   const { municipality } = useContext(MunicipalityContext);
+  const userMunicipalityState = useUserMunicipalityState();
+
+  // Don't render this component if user has signed up for this municipality
+  if (userMunicipalityState === 'loggedInThisMunicipalitySignup') {
+    return null;
+  }
+
   const tickerDescription = tickerDescriptionObject?.tickerDescription;
 
   return (

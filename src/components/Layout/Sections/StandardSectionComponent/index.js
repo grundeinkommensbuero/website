@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { List as Loader } from 'react-content-loader';
 import { MunicipalityContext } from '../../../../context/Municipality';
-import { useUserMunicipalityContentfulState } from '../../../../hooks/Municipality/UserMunicipalityContentfulState';
+import { useUserMunicipalityState } from '../../../../hooks/Municipality/UserMunicipalityState';
 import { SignUpButton } from '../../../TickerToSignup/SignupButton';
 import { contentfulJsonToHtml } from '../../../utils/contentfulJsonToHtml';
 import { getButtonText } from '../../../TickerToSignup/SignupButtonAndTile';
@@ -17,8 +17,8 @@ export const StandardSectionComponent = ({
   image,
 }) => {
   const { municipality } = useContext(MunicipalityContext);
-  const userContentfulState = useUserMunicipalityContentfulState();
-  const buttonText = getButtonText(municipality, userContentfulState);
+  const userMunicipalityState = useUserMunicipalityState();
+  const buttonText = getButtonText(municipality, userMunicipalityState);
 
   return (
     <>

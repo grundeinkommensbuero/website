@@ -3,7 +3,8 @@ import Header from './Header';
 import Footer from './Footer';
 import * as s from './style.module.less';
 import '../style/base.less';
-import Sections, { ContentfulSection } from './Sections';
+import { ContentfulSection } from './Sections';
+import { RenderPage } from './Sections/RenderPage';
 import { Helmet } from 'react-helmet-async';
 import { useStaticQuery, graphql } from 'gatsby';
 import { Overlay } from '../Overlay';
@@ -207,12 +208,14 @@ function Template({ children, sections, pageContext, title, description }) {
   const [modifiedMainMenu, setModifiedMainMenu] = useState(
     globalStuff.mainMenu
   );
+
   // Updates the Menu when userData is loaded
   useEffect(() => {
     const municipalityMenuItems = createMunicipalityMenuItems();
     const modifiedMenu = mergeIntoMenu(municipalityMenuItems);
     return setModifiedMainMenu(modifiedMenu);
   }, [customUserData, isAuthenticated]);
+
   // Helpers
   const createMunicipalityMenuItems = (num = 5) => {
     let sortedMunicipalities = [];
@@ -239,6 +242,7 @@ function Template({ children, sections, pageContext, title, description }) {
     }
     return menuItems;
   };
+
   const mergeIntoMenu = municipalityMenuItems => {
     const mainMenu = JSON.parse(JSON.stringify(globalStuff.mainMenu));
     const indexToMod = mainMenu.findIndex(el => el.title === 'Mitmachen');
@@ -285,7 +289,7 @@ function Template({ children, sections, pageContext, title, description }) {
       </Helmet>
       <main className={s.withoutStickyBanner}>
         {children}
-        <Sections
+        <RenderPage
           sections={sectionsWithColorScheme}
           pageContext={pageContext}
         />

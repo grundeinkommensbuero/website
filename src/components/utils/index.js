@@ -252,73 +252,58 @@ export function mapCampaignCodeToAgs(campaignCode) {
   return stateToAgs[campaignCode.split('-')[0]];
 }
 
-// Translate the list of strings of contentful in an Array of flags
-// that match the userContentfulState or municpalityContentful state
-// of the useUserMunicipalityContentfulState hook
-export const getShowForOptions = arrayOfStrings => {
-  const allShowForOptions = [
-    'showForNoMunicipality',
-    'showForQualifying',
-    'showForQualified',
-    'showForCollecting',
-    'showForLoggedOut',
-    'showForLoggedInNoMunicipalitySignup',
-    'showForLoggedInThisMunicipalitySignup',
-    'showForLoggedInOtherMunicipalitySignup',
-    'showForBerlin',
-    'showForHamburg',
-    'showForBremen',
-    'showForAllExceptBerlinHamburgBremen',
-  ];
-  const showForOptions = {};
-  for (const x of allShowForOptions) {
-    let attr = x.replace('showFor', '');
-    attr = attr.charAt(0).toLowerCase() + attr.slice(1);
-    showForOptions[attr] = arrayOfStrings.includes(x);
-  }
-  return showForOptions;
-};
-
 export const getFilteredElementsByContentfulState = ({
   elements,
-  municipalityContentfulState,
-  userContentfulState,
-  berlinHamburgBremenState,
   municipality,
-  showByDefault,
+  isAuthenticated,
+  userMunicipalityState,
 }) => {
-  if (!elements) {
-    return elements;
-  }
-  return elements.filter(el => {
-    if (el.showForOptions || el.showForAgs) {
-      let showState = false;
+  return elements?.filter(el => {
+    let showState = true;
 
-      if (el.showForOptions) {
-        const showForOptions = getShowForOptions(el.showForOptions);
-
-        showState =
-          showForOptions[municipalityContentfulState] &&
-          showForOptions[userContentfulState];
-
-        // BerlinHamburgBremen state might be undefined (on component level)
-        if (berlinHamburgBremenState) {
-          showState = showState && showForOptions[berlinHamburgBremenState];
+    // If no municipality is set (for start page) we render every section
+    // if municipality is set, we check if section should be rendered for this
+    // municipality based on the ags attribute in contentful. If there is a default section
+    // with a specific sectionId it should be overwritten, if there is specific section with an ags.
+    if (municipality?.ags) {
+      if (el.ags?.length) {
+        if (!el.ags.includes(municipality.ags)) {
+          showState = false;
         }
-      }
-
-      if (
-        el.showForAgs &&
-        municipality?.ags &&
-        el.showForAgs !== municipality.ags
+      } else if (
+        el.sectionId !== '' &&
+        elements.findIndex(
+          ({ sectionId, ags }) =>
+            sectionId === el.sectionId &&
+            ags?.length &&
+            ags.includes(municipality.ags)
+        ) !== -1
       ) {
         showState = false;
       }
-
-      return showState;
     }
 
-    return showByDefault;
+    // If element has checkbox showForOwnMunicipality we only render the component
+    // if user is signed in and has signed up for that municipality.
+    if (
+      el.showForOwnMunicipality &&
+      (!municipality?.ags ||
+        !isAuthenticated ||
+        userMunicipalityState !== 'loggedInThisMunicipalitySignup')
+    ) {
+      showState = false;
+    }
+
+    // Check if false, because default is null and default means show everywhere,
+    // while false means don't show element for own municipality
+    if (
+      el.showForOwnMunicipality === false &&
+      userMunicipalityState === 'loggedInThisMunicipalitySignup'
+    ) {
+      showState = false;
+    }
+
+    return showState;
   });
 };
 
